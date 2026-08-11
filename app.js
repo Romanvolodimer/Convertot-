@@ -185,7 +185,7 @@ function processCsv(text) {
 function renderPreview(rows) {
   previewBody.innerHTML = "";
 
-  rows.slice(0, 10).forEach((row) => {
+  rows.slice(0, 24).forEach((row) => {
     const tr = document.createElement("tr");
 
     [row.date, row.time, formatVolume(row.kw), formatVolume(row.mw)].forEach(
