@@ -1,17 +1,20 @@
 <!doctype html>
 <html lang="uk">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CSV → Hourly Excel Converter</title>
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
   <main class="container">
     <section class="card">
       <div class="badge">CSV → XLSX</div>
       <h1>Конвертер 30 хв → 1 година</h1>
-      <p class="subtitle">Завантаж CSV-файл, і сервіс об'єднає кожні два 30-хвилинні значення в один погодинний запис.</p>
+      <p class="subtitle">Завантаж CSV-файл, і сервіс об'єднає кожні два 30-хвилинні значення в один погодинний запис.
+      </p>
 
       <label class="dropzone" id="dropzone" for="fileInput">
         <input id="fileInput" type="file" accept=".csv,text/csv">
@@ -38,20 +41,24 @@
         <h2>Попередній перегляд</h2>
         <div class="table-scroll">
           <table>
-            <thead><tr><th>Дата</th><th>Час</th><th>Обсяг</th></tr></thead>
+            <thead>
+              <tr>
+                <th>Дата</th>
+                <th>Час</th>
+                <th>Обсяг</th>
+              </tr>
+            </thead>
             <tbody id="previewBody"></tbody>
           </table>
         </div>
       </div>
 
-      <div class="privacy">
-        <strong>🔒 Дані не завантажуються на сервер.</strong>
-        Обробка CSV відбувається безпосередньо у твоєму браузері.
-      </div>
+
     </section>
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="app.js"></script>
 </body>
+
 </html>
