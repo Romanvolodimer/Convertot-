@@ -84,7 +84,7 @@ function parseDateTime(text) {
   };
 }
 
-function formatNumber(n) {
+function formatVolume(n) {
   return Number(n.toFixed(15)).toString();
 }
 
@@ -107,10 +107,11 @@ function processCsv(text) {
     /value|volume|обсяг|значення/.test(v),
   );
 
-  // Для твого формату:
+  // Для твого CSV:
   // A = Date
   // B = Timezone
   // C = Value
+
   const di = dateIndex >= 0 ? dateIndex : 0;
   const vi = valueIndex >= 0 ? valueIndex : 2;
 
@@ -135,8 +136,7 @@ function processCsv(text) {
 
   if (records.length % 2 !== 0) {
     throw new Error(
-      `Знайдено ${records.length} 30-хвилинних записів. ` +
-        `Кількість має бути парною.`,
+      `Знайдено ${records.length} 30-хвилинних записів. Кількість має бути парною.`,
     );
   }
 
@@ -161,15 +161,15 @@ function processCsv(text) {
       );
     }
 
-    // Сума двох 30-хвилинних значень = погодинне значення в кВт
+    // Погодинне значення в кВт
     const kw = a.value + b.value;
 
-    // Переведення кВт → мВт
+    // Переведення в мВт
     const mw = kw / 1000;
 
     result.push({
       date: a.date,
-      time: `${a.hour}:00:00`,
+      time: Number(a.hour) + 1,
       kw: kw,
       mw: mw,
     });
@@ -187,34 +187,16 @@ function renderPreview(rows) {
   rows.slice(0, 10).forEach((row) => {
     const tr = document.createElement("tr");
 
-    [row.date, row.time, formatNumber(row.kw), formatNumber(row.mw)].forEach(
+    [row.date, row.time, formatVolume(row.kw), formatVolume(row.mw)].forEach(
       (value) => {
         const td = document.createElement("td");
-
         td.textContent = value;
-
         tr.appendChild(td);
       },
     );
 
     previewBody.appendChild(tr);
   });
-
-  // Оновлюємо заголовок таблиці
-  const headers = document.querySelectorAll("#previewWrap th");
-
-  if (headers.length >= 3) {
-    headers[0].textContent = "Дата";
-    headers[1].textContent = "Час";
-    headers[2].textContent = "кВт";
-
-    if (headers.length === 3) {
-      const th = document.createElement("th");
-      th.textContent = "мВт";
-
-      headers[2].parentNode.appendChild(th);
-    }
-  }
 
   previewWrap.classList.remove("hidden");
 }
@@ -255,8 +237,7 @@ async function handleFile(file) {
     convertBtn.disabled = false;
 
     setStatus(
-      `Готово: ${records.length} 30-хв. записів → ` +
-        `${result.length} погодинних.`,
+      `Готово: ${records.length} 30-хв. записів → ${result.length} погодинних.`,
       "success",
     );
   } catch (error) {
@@ -269,17 +250,20 @@ function downloadXlsx() {
     return;
   }
 
-  // Заголовки Excel
-  const data = [["Дата", "Час", "кВт", "мВт"]];
+  // Заголовки
+  const data = [["Date", "Time", "кВт", "мВт"]];
 
-  // Дані
   convertedRows.forEach((row) => {
-    data.push([row.date, row.time, row.kw, row.mw]);
+    data.push([
+      row.date,
+      `${String(row.time).padStart(2, "0")}:00`,
+      row.kw,
+      row.mw,
+    ]);
   });
 
   const ws = XLSX.utils.aoa_to_sheet(data);
 
-  // Ширина колонок
   ws["!cols"] = [{ wch: 14 }, { wch: 12 }, { wch: 24 }, { wch: 24 }];
 
   const wb = XLSX.utils.book_new();
@@ -319,7 +303,6 @@ fileInput.addEventListener("change", (e) => {
 ["dragenter", "dragover"].forEach((eventName) => {
   dropzone.addEventListener(eventName, (e) => {
     e.preventDefault();
-
     dropzone.classList.add("drag");
   });
 });
@@ -327,7 +310,6 @@ fileInput.addEventListener("change", (e) => {
 ["dragleave", "drop"].forEach((eventName) => {
   dropzone.addEventListener(eventName, (e) => {
     e.preventDefault();
-
     dropzone.classList.remove("drag");
   });
 });
