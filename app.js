@@ -48,10 +48,11 @@ function parseCsvLine(line) {
 }
 
 function parseNumber(text) {
-  const normalized = String(text)
-    .trim()
-    .replace(/^"|"$/g, "")
-    .replace(/\s/g, "");
+  let normalized = String(text).trim().replace(/^"|"$/g, "").replace(/\s/g, "");
+
+  // Якщо десятковий роздільник — кома,
+  // перетворюємо її на крапку для JavaScript.
+  normalized = normalized.replace(",", ".");
 
   if (!/^-?\d+(?:\.\d+)?$/.test(normalized)) {
     throw new Error(`Некоректне числове значення: "${text}"`);
